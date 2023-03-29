@@ -1,0 +1,10 @@
+pluginManagement {
+    repositories {
+        maven { url 'https://repo.spring.io/release' }
+        gradlePluginPortal()
+    }
+}
+
+include ':agenda-consumer'
+include ':agenda-producer'
+include ':gateway'
