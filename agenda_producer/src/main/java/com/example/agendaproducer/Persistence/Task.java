@@ -14,7 +14,7 @@ public class Task {
         this.serviceAddress = serviceAddress;
     }
 
-    public Task(){
+    public Task() {
         taskId = 0;
         tarefa = null;
         taskPriority = 0;

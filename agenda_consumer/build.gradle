@@ -1,7 +1,7 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.0.4'
-	id 'io.spring.dependency-management' version '1.1.0'
+    id 'java'
+    id 'org.springframework.boot' version '3.0.4'
+    id 'io.spring.dependency-management' version '1.1.0'
 }
 
 group = 'com.scheduler'
@@ -9,15 +9,15 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 ext {
-	set('springCloudVersion', "2022.0.1")
+    set('springCloudVersion', "2022.0.1")
 }
 
 jar {
-	enabled = false
+    enabled = false
 }
 
 dependencies {
@@ -27,9 +27,10 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-stream-binder-kafka'
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.mapstruct:mapstruct:1.5.3.Final'
-    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
 
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose")
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
@@ -38,11 +39,11 @@ dependencies {
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

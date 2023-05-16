@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentProperty;
 public class AgendaApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger(AgendaApplication.class);
+
     @Autowired
     ReactiveMongoOperations mongoTemplate;
 
@@ -30,16 +31,17 @@ public class AgendaApplication {
 
         String mongodbDocument = ctx.getEnvironment().getProperty("spring.data.mongodb.host");
         String mongodbPort = ctx.getEnvironment().getProperty("spring.data.mongodb.port");
-        LOG.info("Connedtec to mongoDb: " + mongodbDocument + " on port" + mongodbPort);
+        LOG.info("Connected to mongoDb: " + mongodbDocument + " on port" + mongodbPort);
     }
 
     @EventListener(ContextRefreshedEvent.class)
     public void initIndicesAfterStartup() {
-        MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext = mongoTemplate.getConverter().getMappingContext();
+        MappingContext<? extends MongoPersistentEntity<?>, MongoPersistentProperty> mappingContext =
+                mongoTemplate.getConverter().getMappingContext();
         IndexResolver resolver = new MongoPersistentEntityIndexResolver(mappingContext);
 
         ReactiveIndexOperations indexOps = mongoTemplate.indexOps(TaskEntity.class);
-        resolver.resolveIndexFor(TaskEntity.class).forEach(e -> indexOps.ensureIndex(e).block());
+        resolver.resolveIndexFor(TaskEntity.class).forEach(indexOps::ensureIndex);
     }
 
 }

@@ -73,8 +73,9 @@ public class AgendaProducer {
                 "/task/{taskId}?delay={delay}&faultPercent={faultPercent}").build(taskId, delay, faultPercent);
         LOG.debug("Will call getTask API in URL: {}", url);
 
-        return webClient.get().uri(url).headers(h -> h.addAll(headers)).retrieve().bodyToMono(Task.class).log(LOG.getName(), Level.FINE)
-                .onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
+        return webClient.get().uri(url).headers(h -> h.addAll(headers)).retrieve().bodyToMono(Task.class)
+                .log(LOG.getName(), Level.FINE)
+                .onErrorMap(WebClientResponseException.class, this::handleException);
     }
 
     private Throwable handleException(Throwable ex) {
@@ -126,11 +127,11 @@ public class AgendaProducer {
         return null;
     }
 
-    private void sendMessage(String str, Event event) {
-        LOG.debug("Sending a {} message to {}", event.getEventType(), str);
+    private void sendMessage(String topic, Event event) {
+        LOG.debug("Sending a {} message to {}", event.getEventType(), topic);
         Message message = MessageBuilder.withPayload(event)
                 .setHeader("partitionKey", event.getKey())
                 .build();
-        streamBridge.send(str, message);
+        streamBridge.send(topic, message);
     }
 }
