@@ -13,10 +13,10 @@ services:
     volumes:
       - $PWD/config-repo:/config-repo
     depends_on:
-      - mongodb:
-          condition: service_healthy
-      - rabbitmq:
-          condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   taskConsumer:
     build: task-consumer/
@@ -33,13 +33,13 @@ services:
     volumes:
       - $PWD/config-repo:/config-repo
     depends_on:
-      - mongodb:
-          condition: service_healthy
-      - rabbitmq:
-          condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
 
   mongodb:
-    image: mongo:4.4.2
+    image: mongodb/mongodb-community-server
     restart: always
     mem_limit: 512m
     ports:
@@ -84,6 +84,6 @@ services:
       - $PWD/config-repo:/config-repo
     ports:
       - "8443:8443"
-    depends_on:
-      auth-server:
-        condition: service_healthy
+      #depends_on:
+      #auth-server:
+      # condition: service_healthy
