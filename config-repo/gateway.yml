@@ -8,25 +8,25 @@ server.ssl:
 
 spring.cloud.gateway.routes:
 
-  - id: agenda_producer
+  - id: agendaProducer
     uri: http://agenda
     predicates:
       - Path=/agenda_producer/**
 
-      #- id: oauth2-server
-      # uri: http://${app.auth-server}
-      #predicates:
-      # - Path=/oauth2/**
+  - id: oauth2-server
+    uri: http://${app.auth-server}
+    predicates:
+      - Path=/oauth2/**
 
-      #- id: oauth2-login
-      # uri: http://${app.auth-server}
-      #predicates:
-      # - Path=/login/**
+  - id: oauth2-login
+    uri: http://${app.auth-server}
+    predicates:
+      - Path=/login/**
 
-      #- id: oauth2-error
-      # uri: http://${app.auth-server}
-      #predicates:
-      # - Path=/error/**
+  - id: oauth2-error
+    uri: http://${app.auth-server}
+    predicates:
+      - Path=/error/**
 
   - id: agenda_producer-swagger-ui
     uri: http://agenda_producer
@@ -38,7 +38,7 @@ spring.cloud.gateway.routes:
     predicates:
       - Path=/webjars/**
 
-#spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}
+spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}
 
 spring.sleuth.reactor.instrumentation-type: decorate-on-last
 

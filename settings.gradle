@@ -8,3 +8,5 @@ pluginManagement {
 include ':agenda-consumer'
 include ':agenda-producer'
 include ':gateway'
+include 'auth_server'
+

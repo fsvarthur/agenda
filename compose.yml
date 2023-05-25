@@ -1,10 +1,11 @@
-version: '2.1'
-
 services:
   taskProducer:
     build: ./
     image: task-producer
-    mem_limit: 512m
+    deploy:
+      resources:
+        limits:
+          memory: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_LOCATION=file:/config-repo/application.yml, file:/config-repo/task-producer.yml
@@ -21,7 +22,10 @@ services:
   taskConsumer:
     build: task-consumer/
     image: task-consumer
-    mem_limit: 512m
+    deploy:
+      resources:
+        limits:
+          memory: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_LOCATION=file:/config-repo/application.yml, file:/config-repo/task-consumer.yml
@@ -38,18 +42,41 @@ services:
       rabbitmq:
         condition: service_healthy
 
+  auth-server:
+    build:
+    image: auth_server
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_LOCATION=file:/config-repo/application.yml,file:/config-repo/auth-server.yml
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_USR}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_PWD}
+    volumes:
+      - $PWD/config-repo:/config-repo
+    healthcheck:
+      test: [ "CMD", "curl", "-fs", "http://localhost:4004/actuator/health" ]
+      interval: 5s
+      timeout: 2s
+      retries: 60
+
   mongodb:
     image: mongodb/mongodb-community-server
     restart: always
-    mem_limit: 512m
+    deploy:
+      resources:
+        limits:
+          memory: 512m
     ports:
-      - "27017:27017"
+      - "27017:2701"
     command: mongod
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USR}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PWD}
     healthcheck:
-      test: "mongo --eval 'db.stats().ok"
+      test: "mongo --eval 'db.stats().ok'"
       interval: 1m30s
       timeout: 30s
       retries: 5
@@ -57,10 +84,13 @@ services:
   rabbitmq:
     image: rabbitmq:3.8.11-management
     restart: always
-    mem_limit: 512m
+    deploy:
+      resources:
+        limits:
+          memory: 512m
     ports:
-      - 5672:5672
-      - 15672:15672
+      - "5672:5672"
+      - "15672:15672"
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USR}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PWD}
@@ -73,7 +103,10 @@ services:
   gateway:
     build: gateway/
     image: ./gateway
-    mem_limit: 512m
+    deploy:
+      resources:
+        limits:
+          memory: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_LOCATION=file:/config-repo/application.yml,file:/config-repo/gateway.yml
@@ -84,6 +117,6 @@ services:
       - $PWD/config-repo:/config-repo
     ports:
       - "8443:8443"
-      #depends_on:
-      #auth-server:
-      # condition: service_healthy
+    depends_on:
+      auth-server:
+        condition: service_healthy
